@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Список Тем</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f8f9fa;
+    }
+    h1 {
+      text-align: center;
+    }
+    #search {
+      display: block;
+      margin: 0 auto 20px;
+      padding: 10px;
+      width: 60%;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      padding: 15px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .card:hover {
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .subject_data {
+      margin-top: 10px;
+      display: none;
+      color: #444;
+      font-size: 14px;
+    }
+    .card.open .subject_data {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Темы</h1>
+  <input type="text" id="search" placeholder="Поиск по темам...">
+  <div class="grid" id="cardGrid"></div>
+
+  <script>
+    const apiUrl = 'http://c3e62499366243.lhr.life/api';
+
+    async function fetchSubjects() {
+      const res = await fetch(apiUrl);
+      return await res.json();
+    }
+
+    function createCard(subjectObj) {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      const title = document.createElement('div');
+      title.className = 'subject_title';
+      title.textContent = subjectObj.subject;
+
+      const data = document.createElement('div');
+      data.className = 'subject_data';
+      data.textContent = subjectObj.subject_data;
+
+      card.appendChild(title);
+      card.appendChild(data);
+
+      card.addEventListener('click', () => {
+        card.classList.toggle('open');
+      });
+
+      return card;
+    }
+
+    function renderCards(subjects) {
+      const grid = document.getElementById('cardGrid');
+      grid.innerHTML = '';
+      subjects.forEach(sub => {
+        grid.appendChild(createCard(sub));
+      });
+    }
+
+    function handleSearch(subjects) {
+      const input = document.getElementById('search');
+      input.addEventListener('input', () => {
+        const filtered = subjects.filter(s =>
+          s.subject.toLowerCase().includes(input.value.toLowerCase())
+        );
+        renderCards(filtered);
+      });
+    }
+
+    // Инициализация
+    fetchSubjects().then(subjects => {
+      renderCards(subjects);
+      handleSearch(subjects);
+    });
+  </script>
+</body>
+</html>
