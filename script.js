@@ -1,4 +1,4 @@
-const apiUrl = 'https://serverktor.loca.lt'; // убрал слэш на конце — чтобы избежать //
+const apiUrl = 'https://ktor-server-u2py.onrender.com'; // убрал слэш на конце — чтобы избежать //
 
 // Получить всех пользователей
 async function fetchUsers() {
