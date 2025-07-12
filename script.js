@@ -1,4 +1,4 @@
-const apiUrl = 'https://your-tunnel-subdomain.loca.lt/data'; // замени на свой
+const apiUrl = 'https://https://serverktor.loca.lt/';
 
 async function fetchUsers() {
   try {
