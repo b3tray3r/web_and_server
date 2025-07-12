@@ -1,19 +1,37 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Наша команда</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
   <header>
     <h1>Наша команда</h1>
-    <input type="text" id="search" placeholder="Поиск по имени или роли...">
+    <input type="text" id="search" placeholder="Поиск по имени или роли..." />
   </header>
 
   <main>
+    <section class="stats" id="stats">
+      <!-- Статистика появится здесь -->
+    </section>
+
+    <section class="add-user-section">
+      <h2>Добавить нового пользователя</h2>
+      <form id="addUserForm">
+        <input type="text" name="name" placeholder="Имя" required />
+        <input type="number" name="age" placeholder="Возраст" required min="0" />
+        <input type="text" name="role" placeholder="Роль" required />
+        <select name="gender" required>
+          <option value="" disabled selected>Пол</option>
+          <option value="male">Мужской</option>
+          <option value="female">Женский</option>
+        </select>
+        <button type="submit">Добавить</button>
+      </form>
+    </section>
+
     <div class="grid" id="cardGrid"></div>
   </main>
 
