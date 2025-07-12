@@ -3,7 +3,7 @@ const apiUrl = 'https://serverktor.loca.lt/';
 // Получить всех пользователей
 async function fetchUsers() {
   try {
-    const res = await fetch(`${apiUrl}/data`);
+    const res = await fetch(apiUrl);
     if (!res.ok) throw new Error("Ошибка загрузки данных");
     return await res.json();
   } catch (e) {
