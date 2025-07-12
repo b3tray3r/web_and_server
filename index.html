@@ -2,112 +2,149 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Список Тем</title>
+  <title>Список людей</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: "Segoe UI", sans-serif;
       margin: 0;
-      padding: 20px;
-      background: #f8f9fa;
+      padding: 30px;
+      background: #f2f2f2;
     }
+
     h1 {
       text-align: center;
+      margin-bottom: 20px;
     }
+
     #search {
       display: block;
-      margin: 0 auto 20px;
-      padding: 10px;
+      margin: 0 auto 30px;
+      padding: 12px 16px;
       width: 60%;
       font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
+
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
     }
+
     .card {
       background: white;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      padding: 15px;
-      transition: all 0.3s ease;
-      cursor: pointer;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s ease;
     }
+
     .card:hover {
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transform: translateY(-4px);
     }
-    .subject_data {
-      margin-top: 10px;
-      display: none;
-      color: #444;
-      font-size: 14px;
+
+    .profile-icon {
+      width: 80px;
+      height: 80px;
+      background: #e0e0e0;
+      border-radius: 50%;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      color: #888;
     }
-    .card.open .subject_data {
-      display: block;
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      color: #333;
+    }
+
+    .card p {
+      margin: 4px 0;
+      font-size: 15px;
+      color: #666;
     }
   </style>
 </head>
 <body>
-  <h1>Темы</h1>
-  <input type="text" id="search" placeholder="Поиск по темам...">
+
+  <h1>Команда</h1>
+  <input type="text" id="search" placeholder="Поиск по имени или роли...">
   <div class="grid" id="cardGrid"></div>
 
   <script>
-    const apiUrl = 'https://c3e62499366243.lhr.life/api/';
+    const apiUrl = 'https://jawfish-coherent-weekly.ngrok-free.app/';
 
-    async function fetchSubjects() {
+    async function fetchUsers() {
       const res = await fetch(apiUrl);
+      if (!res.ok) {
+        console.error("Ошибка при загрузке данных");
+        return [];
+      }
       return await res.json();
     }
 
-    function createCard(subjectObj) {
+    function createUserCard(user) {
       const card = document.createElement('div');
       card.className = 'card';
 
-      const title = document.createElement('div');
-      title.className = 'subject_title';
-      title.textContent = subjectObj.subject;
+      const icon = document.createElement('div');
+      icon.className = 'profile-icon';
+      icon.textContent = user.gender === 'male' ? '👨' : '👩';
 
-      const data = document.createElement('div');
-      data.className = 'subject_data';
-      data.textContent = subjectObj.subject_data;
+      const name = document.createElement('h3');
+      name.textContent = user.name;
 
-      card.appendChild(title);
-      card.appendChild(data);
+      const role = document.createElement('p');
+      role.textContent = `Роль: ${user.role}`;
 
-      card.addEventListener('click', () => {
-        card.classList.toggle('open');
-      });
+      const age = document.createElement('p');
+      age.textContent = `Возраст: ${user.age}`;
+
+      card.appendChild(icon);
+      card.appendChild(name);
+      card.appendChild(role);
+      card.appendChild(age);
 
       return card;
     }
 
-    function renderCards(subjects) {
+    function renderCards(users) {
       const grid = document.getElementById('cardGrid');
       grid.innerHTML = '';
-      subjects.forEach(sub => {
-        grid.appendChild(createCard(sub));
+      users.forEach(user => {
+        grid.appendChild(createUserCard(user));
       });
     }
 
-    function handleSearch(subjects) {
+    function handleSearch(users) {
       const input = document.getElementById('search');
       input.addEventListener('input', () => {
-        const filtered = subjects.filter(s =>
-          s.subject.toLowerCase().includes(input.value.toLowerCase())
+        const searchTerm = input.value.toLowerCase();
+        const filtered = users.filter(user =>
+          user.name.toLowerCase().includes(searchTerm) ||
+          user.role.toLowerCase().includes(searchTerm)
         );
         renderCards(filtered);
       });
     }
 
     // Инициализация
-    fetchSubjects().then(subjects => {
-      renderCards(subjects);
-      handleSearch(subjects);
+    fetchUsers().then(users => {
+      renderCards(users);
+      handleSearch(users);
     });
   </script>
+
 </body>
 </html>
