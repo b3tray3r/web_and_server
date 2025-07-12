@@ -1,4 +1,4 @@
-const apiUrl = 'https://serverktor.loca.lt/';
+const apiUrl = 'https://serverktor.loca.lt'; // убрал слэш на конце — чтобы избежать //
 
 // Получить всех пользователей
 async function fetchUsers() {
@@ -13,10 +13,11 @@ async function fetchUsers() {
   }
 }
 
-// Создать карточку пользователя
-function createUserCard(user) {
+// Создать карточку пользователя с анимацией появления с задержкой
+function createUserCard(user, index) {
   const card = document.createElement('div');
   card.className = 'card';
+  card.style.animationDelay = `${index * 0.1}s`; // задержка анимации по индексу
 
   const icon = document.createElement('div');
   icon.className = 'profile-icon';
@@ -43,8 +44,8 @@ function createUserCard(user) {
 function renderCards(users) {
   const grid = document.getElementById('cardGrid');
   grid.innerHTML = '';
-  users.forEach(user => {
-    const card = createUserCard(user);
+  users.forEach((user, i) => {
+    const card = createUserCard(user, i);
     grid.appendChild(card);
   });
 }
@@ -114,7 +115,6 @@ async function init() {
   renderStats(users);
   handleSearch(users);
 
-  // Обработка формы добавления пользователя
   const form = document.getElementById('addUserForm');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
