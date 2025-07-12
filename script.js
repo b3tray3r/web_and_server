@@ -1,4 +1,4 @@
-const apiUrl = 'https://https://serverktor.loca.lt/';
+const apiUrl = 'https://serverktor.loca.lt/';
 
 async function fetchUsers() {
   try {
