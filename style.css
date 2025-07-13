@@ -1,4 +1,4 @@
-/* Общие стили */
+/* ---------- Общие стили ---------- */
 
 body {
   margin: 0;
@@ -10,33 +10,24 @@ body {
   flex-direction: column;
 }
 
-/* По умолчанию скрываем контент, показываем лоадер */
-body.loading #content {
-  display: none;
-}
+/* ---------- Лоадер (fullscreen, центрирование) ---------- */
 
-body.loading #loader {
-  display: flex;
-}
-
-/* После загрузки — показываем контент, скрываем лоадер */
-#content {
-  display: block;
-}
-
-#loader {
-  display: none;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background: #121a3a;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  gap: 15px;
+#loader-wrapper {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
+  background: #121a3a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 9999;
+}
+
+.loader {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  margin: 0;
+  padding: 0;
 }
 
 .loader li.ball {
@@ -65,7 +56,23 @@ body.loading #loader {
   }
 }
 
-/* Header */
+/* Скрываем контент при загрузке */
+body.loading #content {
+  display: none;
+}
+
+/* Показываем лоадер при загрузке */
+body.loading #loader-wrapper {
+  display: flex;
+}
+
+/* Скрываем лоадер после загрузки */
+body:not(.loading) #loader-wrapper {
+  display: none;
+}
+
+/* ---------- Стили основного контента ---------- */
+
 header {
   text-align: center;
   padding: 40px 20px;
@@ -236,54 +243,40 @@ form button:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
-  cursor: pointer;
-  transition: transform 0.25s ease;
+  gap: 15px;
+  text-align: center;
+  color: #d1d1d1;
+  user-select: none;
+  transition: box-shadow 0.4s ease;
 }
 
 .card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 50px rgba(80, 97, 252, 0.7);
+  box-shadow: 0 0 35px #5061fc;
 }
 
 .card .icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background-color: #5061fc;
-  margin-bottom: 18px;
-  box-shadow: 0 0 18px #5061fc;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 36px;
-  color: #fff;
-  user-select: none;
-  text-transform: uppercase;
-  font-weight: 700;
+  font-size: 52px;
+  color: #5061fc;
+  text-shadow: 0 0 20px #5061fc;
 }
 
 .card .name {
-  font-weight: 700;
   font-size: 22px;
-  color: #e0e7ff;
-  margin-bottom: 8px;
-  text-align: center;
+  font-weight: 700;
+  color: #e5e9ff;
 }
 
 .card .age,
 .card .role {
   font-weight: 600;
-  font-size: 16px;
-  color: #bbb;
-  margin-bottom: 6px;
-  user-select: none;
-  text-align: center;
+  letter-spacing: 0.6px;
+  color: #aaa;
 }
 
 footer {
   text-align: center;
-  padding: 25px 0;
-  color: #555;
+  padding: 15px 10px;
   font-size: 14px;
+  color: #666;
   user-select: none;
 }
