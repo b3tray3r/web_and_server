@@ -110,7 +110,17 @@ async function addUser(data) {
 
 // Инициализация
 async function init() {
+  const loader = document.getElementById('loader');
+  const grid = document.getElementById('cardGrid');
+
+  loader.style.display = 'flex';     // Показываем loader
+  grid.style.display = 'none';       // Скрываем сетку пока
+
   let users = await fetchUsers();
+
+  loader.style.display = 'none';     // Скрываем loader после загрузки
+  grid.style.display = 'grid';       // Показываем сетку с карточками
+
   renderCards(users);
   renderStats(users);
   handleSearch(users);
