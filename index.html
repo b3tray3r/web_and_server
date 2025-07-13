@@ -7,14 +7,17 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="loading">
-  <!-- Анимация загрузки -->
-  <div id="loader" class="loader">
-    <li class="ball"></li>
-    <li class="ball"></li>
-    <li class="ball"></li>
+
+  <!-- Лоадер fullscreen -->
+  <div id="loader-wrapper">
+    <ul id="loader" class="loader">
+      <li class="ball"></li>
+      <li class="ball"></li>
+      <li class="ball"></li>
+    </ul>
   </div>
 
-  <!-- Основной контент -->
+  <!-- Основной контент страницы -->
   <div id="content">
     <header>
       <h1>Наша команда</h1>
@@ -22,7 +25,9 @@
     </header>
 
     <main>
-      <section class="stats" id="stats"></section>
+      <section class="stats" id="stats">
+        <!-- Статистика появится здесь -->
+      </section>
 
       <section class="add-user-section">
         <h2>Добавить нового пользователя</h2>
