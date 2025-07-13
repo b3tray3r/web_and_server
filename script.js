@@ -1,133 +1,99 @@
-const apiUrl = 'https://ktor-server-u2py.onrender.com'; // убрал слэш на конце — чтобы избежать //
+// Эмуляция запроса на сервер — замени на свой URL
+const API_URL = 'https://your-ktor-server/api/users';
 
-// Получить всех пользователей
+// Получить пользователей с сервера
 async function fetchUsers() {
   try {
-    const res = await fetch(apiUrl);
-    if (!res.ok) throw new Error("Ошибка загрузки данных");
-    return await res.json();
-  } catch (e) {
-    console.error(e);
-    alert("Не удалось загрузить данные.");
+    const res = await fetch(API_URL);
+    if (!res.ok) throw new Error('Ошибка при загрузке данных');
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error(err);
     return [];
   }
 }
 
-// Создать карточку пользователя с анимацией появления с задержкой
-function createUserCard(user, index) {
+// Создать карточку пользователя
+function createCard(user) {
   const card = document.createElement('div');
-  card.className = 'card';
-  card.style.animationDelay = `${index * 0.1}s`; // задержка анимации по индексу
+  card.classList.add('card');
 
-  const icon = document.createElement('div');
-  icon.className = 'profile-icon';
-  icon.textContent = user.gender === 'male' ? '👨' : '👩';
+  // Аватар — например, иконка по полу
+  const avatar = document.createElement('div');
+  avatar.classList.add('avatar');
+  if (user.gender === 'male') {
+    avatar.style.backgroundImage = 'url(https://cdn-icons-png.flaticon.com/512/147/147144.png)';
+  } else if (user.gender === 'female') {
+    avatar.style.backgroundImage = 'url(https://cdn-icons-png.flaticon.com/512/147/147140.png)';
+  } else {
+    avatar.style.backgroundColor = '#666';
+  }
 
   const name = document.createElement('h3');
   name.textContent = user.name;
 
-  const role = document.createElement('p');
-  role.textContent = `Роль: ${user.role}`;
+  const info = document.createElement('p');
+  info.textContent = `${user.role} — ${user.age} лет`;
 
-  const age = document.createElement('p');
-  age.textContent = `Возраст: ${user.age}`;
-
-  card.appendChild(icon);
+  card.appendChild(avatar);
   card.appendChild(name);
-  card.appendChild(role);
-  card.appendChild(age);
+  card.appendChild(info);
 
   return card;
 }
 
-// Отрисовать всех пользователей
+// Отобразить все карточки
 function renderCards(users) {
   const grid = document.getElementById('cardGrid');
   grid.innerHTML = '';
-  users.forEach((user, i) => {
-    const card = createUserCard(user, i);
-    grid.appendChild(card);
-  });
-}
 
-// Отрисовать статистику
-function renderStats(users) {
-  const statsDiv = document.getElementById('stats');
-  if (!users.length) {
-    statsDiv.textContent = 'Пользователей нет';
+  if (users.length === 0) {
+    grid.innerHTML = '<p style="color:#ccc; text-align:center; grid-column: 1 / -1;">Пользователи не найдены.</p>';
     return;
   }
 
-  const totalUsers = users.length;
-  const avgAge = Math.round(users.reduce((sum, u) => sum + u.age, 0) / totalUsers);
+  users.forEach(user => {
+    grid.appendChild(createCard(user));
+  });
+}
 
-  // Распределение по ролям
-  const rolesCount = users.reduce((acc, u) => {
-    acc[u.role] = (acc[u.role] || 0) + 1;
-    return acc;
-  }, {});
+// Статистика
+function renderStats(users) {
+  const stats = document.getElementById('stats');
+  const total = users.length;
+  const maleCount = users.filter(u => u.gender === 'male').length;
+  const femaleCount = users.filter(u => u.gender === 'female').length;
+  const averageAge = total ? Math.round(users.reduce((sum, u) => sum + u.age, 0) / total) : 0;
 
-  let rolesHTML = '';
-  for (const [role, count] of Object.entries(rolesCount)) {
-    rolesHTML += `<div><strong>${role}:</strong> ${count}</div>`;
-  }
-
-  statsDiv.innerHTML = `
-    <div><strong>Всего пользователей:</strong> ${totalUsers}</div>
-    <div><strong>Средний возраст:</strong> ${avgAge}</div>
-    ${rolesHTML}
+  stats.innerHTML = `
+    <div>Всего пользователей: <strong>${total}</strong></div>
+    <div>Мужчин: <strong>${maleCount}</strong></div>
+    <div>Женщин: <strong>${femaleCount}</strong></div>
+    <div>Средний возраст: <strong>${averageAge}</strong></div>
   `;
 }
 
-// Поиск по имени и роли
+// Фильтрация по поиску
 function handleSearch(users) {
-  const input = document.getElementById('search');
-  input.addEventListener('input', () => {
-    const searchTerm = input.value.toLowerCase();
+  const searchInput = document.getElementById('search');
+
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.toLowerCase();
     const filtered = users.filter(user =>
-      user.name.toLowerCase().includes(searchTerm) ||
-      user.role.toLowerCase().includes(searchTerm)
+      user.name.toLowerCase().includes(query) ||
+      user.role.toLowerCase().includes(query)
     );
     renderCards(filtered);
   });
 }
 
-// Отправка нового пользователя на сервер
-async function addUser(data) {
-  try {
-    const res = await fetch(`${apiUrl}/addUser`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) throw new Error('Ошибка при добавлении пользователя');
-    return await res.json();
-  } catch (e) {
-    console.error(e);
-    alert('Не удалось добавить пользователя');
-  }
-}
-
-// Инициализация
-async function init() {
-  const loader = document.getElementById('loader');
-  const grid = document.getElementById('cardGrid');
-
-  loader.style.display = 'flex';     // Показываем loader
-  grid.style.display = 'none';       // Скрываем сетку пока
-
-  let users = await fetchUsers();
-
-  loader.style.display = 'none';     // Скрываем loader после загрузки
-  grid.style.display = 'grid';       // Показываем сетку с карточками
-
-  renderCards(users);
-  renderStats(users);
-  handleSearch(users);
-
+// Добавление пользователя (только локально, чтобы увидеть работу формы)
+function handleAddUser(users) {
   const form = document.getElementById('addUserForm');
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener('submit', e => {
     e.preventDefault();
+
     const formData = new FormData(form);
     const newUser = {
       name: formData.get('name').trim(),
@@ -136,19 +102,36 @@ async function init() {
       gender: formData.get('gender'),
     };
 
-    if (!newUser.name || !newUser.role || !newUser.gender || !newUser.age) {
-      alert('Пожалуйста, заполните все поля корректно');
-      return;
-    }
+    if (!newUser.name || !newUser.age || !newUser.role || !newUser.gender) return;
 
-    const addedUser = await addUser(newUser);
-    if (addedUser) {
-      users.push(addedUser);
-      renderCards(users);
-      renderStats(users);
-      form.reset();
-    }
+    // Добавляем пользователя в список и обновляем отображение
+    users.push(newUser);
+    renderCards(users);
+    renderStats(users);
+    form.reset();
   });
+}
+
+// Инициализация
+async function init() {
+  const loader = document.getElementById('loader');
+  const content = document.getElementById('content');
+
+  // Показать loader, скрыть контент
+  loader.style.display = 'flex';
+  content.style.display = 'none';
+
+  // Загрузка данных
+  let users = await fetchUsers();
+
+  // Скрыть loader, показать контент
+  loader.style.display = 'none';
+  content.style.display = 'block';
+
+  renderCards(users);
+  renderStats(users);
+  handleSearch(users);
+  handleAddUser(users);
 }
 
 init();
