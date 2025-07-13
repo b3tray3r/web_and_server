@@ -1,102 +1,88 @@
-// --- НАСТРОЙКИ ---
-const API_URL = 'https://ktor-server-u2py.onrender.com'; // Поменяй на реальный API
-
-// Получаем элементы
-const loader = document.getElementById('loader');
-const content = document.getElementById('content');
 const cardGrid = document.getElementById('cardGrid');
-const stats = document.getElementById('stats');
-const searchInput = document.getElementById('search');
+const statsSection = document.getElementById('stats');
 const addUserForm = document.getElementById('addUserForm');
+const searchInput = document.getElementById('search');
 
-let users = [];
+let users = []; // сюда загрузим данные
 
-// Функция показа лоадера
+// Показываем лоадер — добавляем класс loading к body
 function showLoader() {
   document.body.classList.add('loading');
 }
 
-// Функция скрытия лоадера
+// Скрываем лоадер — убираем класс loading с body
 function hideLoader() {
   document.body.classList.remove('loading');
 }
 
-// Функция загрузки данных с сервера
-async function fetchUsers() {
+// Получить пользователей с сервера
+async function loadUsers() {
   showLoader();
   try {
-    const res = await fetch(API_URL);
-    if (!res.ok) throw new Error('Ошибка загрузки данных');
-    users = await res.json();
-    renderUsers(users);
-    renderStats(users);
-  } catch (e) {
-    alert('Ошибка при загрузке пользователей: ' + e.message);
+    // Имитация API-запроса
+    // Например, замените URL на ваш реальный API
+    const response = await fetch('https://ktor-server-u2py.onrender.com');
+    if (!response.ok) throw new Error('Ошибка загрузки данных');
+    const data = await response.json();
+    users = data;
+    renderAll(users);
+  } catch (error) {
+    alert('Ошибка загрузки: ' + error.message);
   } finally {
     hideLoader();
   }
 }
 
-// Функция отрисовки пользователей
-function renderUsers(usersToRender) {
-  cardGrid.innerHTML = '';
-  if (usersToRender.length === 0) {
-    cardGrid.innerHTML = '<p style="text-align:center; width: 100%;">Пользователи не найдены</p>';
+// Рендер статистики
+function renderStats(users) {
+  if (users.length === 0) {
+    statsSection.innerHTML = '<p>Пользователи не найдены</p>';
     return;
   }
-  usersToRender.forEach(user => {
-    const card = document.createElement('div');
-    card.className = 'card';
 
-    const icon = document.createElement('div');
-    icon.className = 'icon';
-    icon.textContent = user.gender === 'female' ? '♀' : '♂';
+  const total = users.length;
+  const males = users.filter(u => u.gender === 'male').length;
+  const females = users.filter(u => u.gender === 'female').length;
+  const avgAge = (users.reduce((sum, u) => sum + u.age, 0) / total).toFixed(1);
 
-    const name = document.createElement('div');
-    name.className = 'name';
-    name.textContent = user.name;
+  statsSection.innerHTML = `
+    <div>Всего пользователей: <b>${total}</b></div>
+    <div>Мужчин: <b>${males}</b></div>
+    <div>Женщин: <b>${females}</b></div>
+    <div>Средний возраст: <b>${avgAge}</b></div>
+  `;
+}
 
-    const age = document.createElement('div');
-    age.className = 'age';
-    age.textContent = `Возраст: ${user.age}`;
+// Создаёт DOM-элемент карточки пользователя
+function createUserCard(user) {
+  const div = document.createElement('div');
+  div.classList.add('card');
 
-    const role = document.createElement('div');
-    role.className = 'role';
-    role.textContent = `Роль: ${user.role}`;
+  // Иконка в зависимости от пола
+  const icon = user.gender === 'male' ? '👨' : '👩';
 
-    card.append(icon, name, age, role);
+  div.innerHTML = `
+    <div class="icon">${icon}</div>
+    <div class="name">${user.name}</div>
+    <div class="age">Возраст: ${user.age}</div>
+    <div class="role">Роль: ${user.role}</div>
+  `;
+
+  return div;
+}
+
+// Отрисовка карточек и статистики
+function renderAll(data) {
+  renderStats(data);
+  cardGrid.innerHTML = '';
+  data.forEach(user => {
+    const card = createUserCard(user);
     cardGrid.appendChild(card);
   });
 }
 
-// Функция отрисовки статистики
-function renderStats(usersList) {
-  const total = usersList.length;
-  const males = usersList.filter(u => u.gender === 'male').length;
-  const females = usersList.filter(u => u.gender === 'female').length;
-  const avgAge = (usersList.reduce((sum, u) => sum + u.age, 0) / total).toFixed(1);
-
-  stats.innerHTML = `
-    <div>Всего пользователей: <strong>${total}</strong></div>
-    <div>Мужчин: <strong>${males}</strong></div>
-    <div>Женщин: <strong>${females}</strong></div>
-    <div>Средний возраст: <strong>${avgAge}</strong></div>
-  `;
-}
-
-// Функция фильтрации пользователей по поиску
-function filterUsers() {
-  const query = searchInput.value.toLowerCase();
-  const filtered = users.filter(u =>
-    u.name.toLowerCase().includes(query) ||
-    u.role.toLowerCase().includes(query)
-  );
-  renderUsers(filtered);
-  renderStats(filtered);
-}
-
 // Обработка формы добавления пользователя
-addUserForm.addEventListener('submit', async (e) => {
+addUserForm.addEventListener('submit', (e) => {
   e.preventDefault();
 
   const formData = new FormData(addUserForm);
@@ -104,42 +90,41 @@ addUserForm.addEventListener('submit', async (e) => {
     name: formData.get('name').trim(),
     age: Number(formData.get('age')),
     role: formData.get('role').trim(),
-    gender: formData.get('gender')
+    gender: formData.get('gender'),
   };
 
-  if (!newUser.name || !newUser.role || !newUser.gender || !newUser.age) {
-    alert('Заполните все поля правильно!');
+  if (!newUser.name || !newUser.age || !newUser.role || !newUser.gender) {
+    alert('Заполните все поля');
     return;
   }
 
-  try {
-    // Отправляем на сервер
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newUser),
-    });
-
-    if (!res.ok) throw new Error('Ошибка добавления пользователя');
-
-    // Получаем обновленный список или добавляем локально
-    const addedUser = await res.json();
-    users.push(addedUser);
-
-    // Обновляем отображение
-    filterUsers();
-
-    // Очищаем форму
-    addUserForm.reset();
-  } catch (e) {
-    alert('Ошибка при добавлении пользователя: ' + e.message);
-  }
+  users.push(newUser);
+  renderAll(users);
+  addUserForm.reset();
 });
 
-// Поиск
-searchInput.addEventListener('input', filterUsers);
+// Поиск по имени и роли
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.trim().toLowerCase();
+  if (!query) {
+    renderAll(users);
+    return;
+  }
+  const filtered = users.filter(u =>
+    u.name.toLowerCase().includes(query) || u.role.toLowerCase().includes(query)
+  );
+  renderAll(filtered);
+});
 
-// При загрузке страницы
+// Запуск загрузки при загрузке страницы
 window.addEventListener('load', () => {
-  fetchUsers();
+  // Для демонстрации можно подменить loadUsers на локальные данные, например:
+  // users = [
+  //   { name: 'Иван', age: 32, role: 'Разработчик', gender: 'male' },
+  //   { name: 'Мария', age: 28, role: 'Аналитик', gender: 'female' },
+  // ];
+  // renderAll(users);
+  // hideLoader();
+
+  loadUsers();
 });
