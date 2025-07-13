@@ -3,6 +3,15 @@ const statsSection = document.getElementById('stats');
 const addUserForm = document.getElementById('addUserForm');
 const searchInput = document.getElementById('search');
 
+import { auth } from './firebase-config.js';
+  import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
+
+  onAuthStateChanged(auth, user => {
+    if (!user) {
+      window.location.href = 'login.html'; // перенаправление на вход
+    }
+  });
+
 
 let users = []; // сюда загрузим данные
 
