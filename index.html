@@ -7,41 +7,45 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>Наша команда</h1>
-    <input type="text" id="search" placeholder="Поиск по имени или роли..." />
-  </header>
+  <!-- Loader -->
+  <div id="loader" class="loader">
+    <li class="ball"></li>
+    <li class="ball"></li>
+    <li class="ball"></li>
+  </div>
 
-  <main>
-    <section class="stats" id="stats">
-      <!-- Статистика появится здесь -->
-    </section>
+  <!-- Основной контент -->
+  <div id="content" style="display:none;">
+    <header>
+      <h1>Наша команда</h1>
+      <input type="text" id="search" placeholder="Поиск по имени или роли..." />
+    </header>
 
-    <section class="add-user-section">
-      <h2>Добавить нового пользователя</h2>
-      <form id="addUserForm">
-        <input type="text" name="name" placeholder="Имя" required />
-        <input type="number" name="age" placeholder="Возраст" required min="0" />
-        <input type="text" name="role" placeholder="Роль" required />
-        <select name="gender" required>
-          <option value="" disabled selected>Пол</option>
-          <option value="male">Мужской</option>
-          <option value="female">Женский</option>
-        </select>
-        <button type="submit">Добавить</button>
-      </form>
-    </section>
-    <div id="loader" class="loader">
-      <li class="ball"></li>
-      <li class="ball"></li>
-      <li class="ball"></li>
-    </div>
-    <div class="grid" id="cardGrid"></div>
-  </main>
+    <main>
+      <section class="stats" id="stats"></section>
 
-  <footer>
-    <p>Создано с ❤️ на Kotlin + Ktor</p>
-  </footer>
+      <section class="add-user-section">
+        <h2>Добавить нового пользователя</h2>
+        <form id="addUserForm">
+          <input type="text" name="name" placeholder="Имя" required />
+          <input type="number" name="age" placeholder="Возраст" required min="0" />
+          <input type="text" name="role" placeholder="Роль" required />
+          <select name="gender" required>
+            <option value="" disabled selected>Пол</option>
+            <option value="male">Мужской</option>
+            <option value="female">Женский</option>
+          </select>
+          <button type="submit">Добавить</button>
+        </form>
+      </section>
+
+      <div class="grid" id="cardGrid"></div>
+    </main>
+
+    <footer>
+      <p>Создано с ❤️ на Kotlin + Ktor</p>
+    </footer>
+  </div>
 
   <script src="script.js"></script>
 </body>
