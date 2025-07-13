@@ -1,5 +1,5 @@
 // --- НАСТРОЙКИ ---
-const API_URL = 'https://your-api-url.com/users'; // Поменяй на реальный API
+const API_URL = 'https://ktor-server-u2py.onrender.com'; // Поменяй на реальный API
 
 // Получаем элементы
 const loader = document.getElementById('loader');
